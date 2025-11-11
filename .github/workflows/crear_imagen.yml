@@ -8,8 +8,8 @@ on:
 
 permissions:
   contents: read
-  packages: write  # Requerido para ghcr.io
-  id-token: write  # Permite autenticación OIDC (importante en algunos runners)
+  packages: write
+  id-token: write
 
 jobs:
   build:
@@ -40,6 +40,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/trabajo_python:latest
+          tags: ghcr.io/${{ github.repository_owner && github.repository_owner.toLowerCase() }}/trabajo_python:latest
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
