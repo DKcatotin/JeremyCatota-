@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  packages: write  # Necesario para subir imágenes a ghcr.io
+  packages: write
 
 jobs:
   build:
@@ -39,4 +39,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner,, }}/trabajo_python:latest
+          tags: ghcr.io/dkcatotin/trabajo_python:latest
