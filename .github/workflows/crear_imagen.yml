@@ -45,4 +45,4 @@ jobs:
         context: . # Usa el directorio actual como contexto de build
         push: true
         # Usa el nombre de tu repositorio para el tag.
-        tags: ghcr.io/dkcatotin/taller_python:latest
+        tags: ghcr.io/dkcatotin/jeremy-catota:latest
