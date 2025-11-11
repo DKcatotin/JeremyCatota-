@@ -8,41 +8,41 @@ on:
 
 permissions:
   contents: read
-  packages: write
-  id-token: write
+  # Permiso MANDATORIO para subir imágenes a ghcr.io
+  packages: write 
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: 🐍 Set up Python 3.10
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10"
-          
-      - name: 📦 Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+        
+    - name: Install dependencies
+      # CORRECCIÓN: Uso de sintaxis multi-línea (|) para ejecutar comandos separados.
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt # Asegúrate que el archivo se llama 'requirements.txt'
 
-      - name: 🔐 Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    # Se eliminan los pasos "Run tests" y "Run lint"
 
-      - name: 🏗️ Build and push Docker image
-        env:
-          OWNER_LC: ${{ github.repository_owner }}
-        run: |
-          # Convertir el nombre del usuario a minúsculas
-          OWNER_LC=$(echo "$OWNER_LC" | tr '[:upper:]' '[:lower:]')
-          
-          # Construir y subir la imagen
-          docker build -t ghcr.io/${OWNER_LC}/trabajo_python:latest .
-          echo "Pushing image to ghcr.io/${OWNER_LC}/trabajo_python:latest"
-          docker push ghcr.io/${OWNER_LC}/trabajo_python:latest
+    - name: 🔐 Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 🏗️ Build and push Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: . # Usa el directorio actual como contexto de build
+        push: true
+        # Usa el nombre de tu repositorio para el tag.
+        tags: ghcr.io/dkcatotin/taller_python:latest
