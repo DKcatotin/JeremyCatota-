@@ -1,0 +1,39 @@
+# Entorno virtual de Python
+/venv
+
+# Archivos de caché
+__pycache__/
+*.pyc
+*.o
+*.so
+*~
+
+# Directorios de builds y distribución
+dist/
+build/
+*.egg-info/
+.tox/
+.coverage
+
+# Archivos específicos del IDE (ej. VS Code)
+.vscode/
+
+# Configuración del Docker (a veces se ignora, pero aquí lo incluiremos)
+# El archivo .dockerignore es más apropiado para ignorar dentro del contenedor,
+# pero en el repositorio a veces se ignoran archivos grandes o de build.
+# Dejaremos Dockerfile, app.py y requeriment.txt (asumiendo que es requirements.txt)
+
+# Archivos que tienen un estado "U" (Untracked) en tu imagen
+# El archivo de workflow de GitHub Actions:
+# Si el archivo está en .github/workflows, generalmente *no* se ignora,
+# ya que es esencial para el CI/CD. El "!" en la imagen podría indicar un
+# problema de sintaxis o unmerger.
+# Si *realmente* quieres ignorarlo (lo cual es raro para workflows):
+# .github/workflows/crear_imagen.yml
+
+# Archivos de requerimientos/dependencias (si fueran generados, no el principal)
+# requirements.txt (o requeriment.txt en tu caso) generalmente *no* se ignora.
+
+# Archivos específicos de sistemas operativos
+.DS_Store
+Thumbs.db
