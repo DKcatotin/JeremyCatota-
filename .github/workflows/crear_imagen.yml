@@ -36,10 +36,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏗️ Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner && github.repository_owner.toLowerCase() }}/trabajo_python:latest
-          labels: |
-            org.opencontainers.image.source=${{ github.repository }}
+        env:
+          OWNER_LC: ${{ github.repository_owner }}
+        run: |
+          # Convertir el nombre del usuario a minúsculas
+          OWNER_LC=$(echo "$OWNER_LC" | tr '[:upper:]' '[:lower:]')
+          
+          # Construir y subir la imagen
+          docker build -t ghcr.io/${OWNER_LC}/trabajo_python:latest .
+          echo "Pushing image to ghcr.io/${OWNER_LC}/trabajo_python:latest"
+          docker push ghcr.io/${OWNER_LC}/trabajo_python:latest
