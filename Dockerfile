@@ -7,11 +7,11 @@ WORKDIR /app
 # Copiar dependencias y código
 COPY . /app
 
-# Instalar Flask
-RUN pip install -r requirements.txt
+# Instalar dependencias
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Exponer el puerto donde corre Flask
+# Exponer el puerto donde corre Gunicorn
 EXPOSE 5000
 
-# Comando por defecto
-CMD ["python", "app.py"]
+# Comando por defecto para producción
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
