@@ -8,42 +8,35 @@ on:
 
 permissions:
   contents: read
-  # Permiso MANDATORIO para subir imágenes a ghcr.io
-  packages: write 
+  packages: write # Permiso obligatorio para subir imágenes a ghcr.io
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-        
-    - name: Install dependencies
-      # CORRECCIÓN: Uso de sintaxis multi-línea (|) para ejecutar comandos separados.
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt # Asegúrate que el archivo se llama 'requirements.txt'
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Asegúrate que el archivo se llama 'requirements.txt'
 
-    # Se eliminan los pasos "Run tests" y "Run lint"
-
-    - name: 🔐 Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
+      - name: 🔐 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
           registry: ghcr.io
-      username: ${{ github.actor }}
-      password: ${{ secrets.GHCR_PAT }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
 
-
-    - name: 🏗️ Build and push Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: . # Usa el directorio actual como contexto de build
-        push: true
-        # Usa el nombre de tu repositorio para el tag.
-        tags: ghcr.io/dkcatotin/trabajo_python:latest
+      - name: 🏗️ Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/dkcatotin/trabajo_python:latest
