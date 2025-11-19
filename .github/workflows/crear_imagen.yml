@@ -8,12 +8,10 @@ on:
 
 permissions:
   contents: read
-  # Permiso MANDATORIO para subir imágenes a ghcr.io
-  packages: write 
+  packages: write  # Necesario para GHCR
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -25,12 +23,9 @@ jobs:
         python-version: "3.10"
         
     - name: Install dependencies
-      # CORRECCIÓN: Uso de sintaxis multi-línea (|) para ejecutar comandos separados.
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt # Asegúrate que el archivo se llama 'requirements.txt'
-
-    # Se eliminan los pasos "Run tests" y "Run lint"
+        pip install -r requirements.txt
 
     - name: 🔐 Login to GitHub Container Registry
       uses: docker/login-action@v3
@@ -42,7 +37,21 @@ jobs:
     - name: 🏗️ Build and push Docker image
       uses: docker/build-push-action@v6
       with:
-        context: . # Usa el directorio actual como contexto de build
+        context: .
         push: true
-        # Usa el nombre de tu repositorio para el tag.
         tags: ghcr.io/dkcatotin/jeremy-catota:latest
+
+    - name: 🔌 Prueba de conexión SSH con el servidor
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        port: ${{ secrets.VPS_SSH_PORT }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        script: |
+          echo "Conexión exitosa desde GitHub Actions"
+          pwd
+          date
+          whoami
+          hostname
+          uptime
