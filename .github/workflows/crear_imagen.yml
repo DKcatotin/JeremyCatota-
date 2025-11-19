@@ -42,7 +42,7 @@ jobs:
         tags: ghcr.io/dkcatotin/jeremy-catota:latest
 
     - name: 🔌 Prueba de conexión SSH con el servidor
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@v1
       with:
         host: ${{ secrets.VPS_HOST }}
         port: ${{ secrets.VPS_SSH_PORT }}
@@ -57,7 +57,7 @@ jobs:
           uptime
 
     - name: 📦 Pasar stack.yml al servidor 
-      uses: appleboy/scp-action@v1.0.4
+      uses: appleboy/scp-action@v1
       with:
         host: ${{ secrets.VPS_HOST }}
         port: ${{ secrets.VPS_SSH_PORT }}
@@ -67,7 +67,7 @@ jobs:
         target: "/home/${{ secrets.VPS_USER }}/automatizar"
 
     - name: 🚀 Deploy en el servidor con Docker Swarm
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/ssh-action@v1
       with:
         host: ${{ secrets.VPS_HOST }}
         port: ${{ secrets.VPS_SSH_PORT }}
@@ -75,6 +75,7 @@ jobs:
         password: ${{ secrets.VPS_PASSWORD }}
         script: |
           echo "Realizando deploy a Docker Swarm"
+          cd ~/automatizar
 
           # Login GHCR
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u dkcatotin --password-stdin
@@ -82,10 +83,17 @@ jobs:
           # Pull de imagen
           docker pull ghcr.io/dkcatotin/jeremy-catota:latest
 
-          # Deploy limpio
-          docker stack rm jeremy || true
-          sleep 10
-          docker stack deploy -c /home/${{ secrets.VPS_USER }}/automatizar/stack.yml jeremy
+          # Borrar el stack quintob
+          docker stack rm quintob || true
 
-          # Ver estado del stack
-          docker stack ps jeremy
+          # Esperar que los servicios se detengan
+          sleep 40
+
+          # Deploy limpio
+          docker stack deploy --with-registry-auth -c stack.yml quintob
+
+          # Esperar inicio del stack
+          sleep 30
+
+          # Ver contenedores activos
+          docker ps
